@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    html,
+    body {
+      padding: 0px;
+      margin: 0px;
+    }
+    #left-paddle {
+      background-color: darkblue;
+      left: 50px;
+    }
+
+    #right-score{
+      right: 10%;
+    }
+
+    #left-score{
+      left: 10%;
+    }
+
+    .score{
+      top:50px;
+      font-size: 50px;
+      position: absolute;
+    }
+
+    #right-paddle {
+      background-color: darkblue;
+      right: 50px;
+    }
+
+    .paddle {
+      top: 0;
+      height: 200px;
+      width: 10px;
+      position: absolute;
+    }
+
+    .ball {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 10px;
+      position: absolute;
+      left: 100px;
+      top: 50px;
+    }
+  </style>
+</head>
+
+
+<body>
+<h1>
+<div class="score" id="right-score">0</div>
+<div class="score" id="left-score">0
+</div>
+</h1>
+  <div class="paddle" id="left-paddle"></div>
+  <div class="paddle" id="right-paddle"></div>
+  <div class="ball" id="ball"></div>
+
+  <script>
+    'use strict';
+    let paddleLeft = document.getElementById('left-paddle');
+    let paddleRight = document.getElementById('right-paddle');
+    let ball = document.getElementById('ball');
+    let paddleLeftTop = 0;
+    let paddleRightTop = 0;
+    let paddleLeftHeight = 200;
+    let paddleRightHeight = 200;
+    let paddleRightDirection = 0;
+    let paddleRightTimer;
+    let paddleLeftDirection = 0;
+    let paddleLeftTimer;
+    paddleLeft.style.top = 0;
+    paddleRight.style.top = 0;
+    let ballXPos = 100;
+    let ballYPos = 50;
+    let ballXDirection = 5;
+    let ballYDirection = 5;
+    let ballWidth = 20;
+    let ballHeight = 20;
+    let leftScoreDisplay = document.getElementById("left-score");
+    let rightScoreDisplay = document.getElementById("right-score");
+    const paddleLeftLeft = 50;
+    const paddleLeftWidth = 10;
+    const paddleRightWidth = 10;
+    const paddleRightRight = 50;
+    let rightScore = 0;
+    let leftScore = 0;
+    paddleRight.style.right = paddleLeftLeft + "px";
+    paddleLeft.style.left = paddleLeftLeft + "px";
+    ball.style.top = ballYPos + "px";
+    ball.style.left = ballXPos + "px";
+
+    function updateScore() {
+      leftScoreDisplay.innerHTML = leftScore
+      rightScoreDisplay.innerHTML = rightScore
+    }
+
+    function moveBall() {
+      let newBallXPos = ballXPos + ballXDirection;
+      let newBallYPos = ballYPos + ballYDirection;
+      if (newBallXPos + ballWidth > window.innerWidth) {
+        ballXDirection = -Math.abs(ballXDirection);
+      }
+      if (newBallYPos + ballHeight > window.innerHeight) {
+        ballYDirection = -Math.abs(ballYDirection);
+      }
+      if (newBallXPos < 0) {
+        ballXDirection = Math.abs(ballXDirection);
+      }
+      if (newBallYPos < 0) {
+        ballYDirection = Math.abs(ballYDirection);
+      }
+      ballXPos += ballXDirection;
+      ballYPos += ballYDirection;
+      if (ballXPos < 20 &&
+        (ballYPos + 20 < paddleLeftTop ||
+          ballYPos > paddleLeftTop + paddleLeftHeight)) {
+        rightScore += 1;
+      }
+      if (ballXPos + 20 > window.innerWidth - 20 &&
+        (ballYPos + 20 < paddleRightTop ||
+          ballYPos > paddleRightTop + paddleRightHeight)) {
+        leftScore += 1;
+      }
+      if (ballXPos < 20 && 
+			(ballYPos + 20 < paddleLeftTop || 
+			 ballYPos > paddleLeftTop + paddleLeftHeight)) {
+			rightScore += 1 - 1;
+			updateScore();
+      ballXPos = 1000;
+		}
+		if (ballXPos + 20 > window.innerWidth - 20 && 
+			(ballYPos + 20 < paddleRightTop || 
+			 ballYPos > paddleRightTop + paddleRightHeight)) {
+			leftScore += 1 - 1;
+			updateScore();
+      ballXPos = 600;
+       }
+      if (
+        newBallYPos >= paddleLeftTop
+        && newBallYPos <= paddleLeftTop + paddleLeftHeight
+        && newBallXPos + ballWidth >= paddleLeftLeft
+        && newBallXPos + ballWidth <= paddleLeftLeft + paddleLeftWidth
+      ) {
+        ballXDirection = -ballXDirection;
+      }
+
+      if (
+        newBallYPos >= paddleLeftTop
+        && newBallYPos <= paddleLeftTop + paddleLeftHeight
+        && newBallXPos >= paddleLeftLeft
+        && newBallXPos <= paddleLeftLeft + paddleLeftWidth
+      ) {
+        ballXDirection = -ballXDirection;
+      }
+      if (
+        newBallYPos >= paddleRightTop
+        && newBallYPos <= paddleRightTop + paddleRightHeight
+        && newBallXPos + ballWidth >= window.innerWidth - paddleRightRight - paddleRightWidth
+        && newBallXPos + ballWidth <= window.innerWidth - paddleRightRight
+      ) {
+        ballXDirection = -ballXDirection;
+      }
+
+      if (
+        newBallYPos >= paddleRightTop
+        && newBallYPos <= paddleRightTop + paddleRightHeight
+        && newBallXPos >= window.innerWidth - paddleRightRight - paddleRightWidth
+        && newBallXPos <= window.innerWidth - paddleRightRight
+      ) {
+        ballXDirection = -ballXDirection;
+      }
+  
+    
+      ball.style.top = ballYPos + 'px';
+      ball.style.left = ballXPos + 'px';
+    }
+    if (paddleLeftHeight < innerHeight) {
+      paddleLeftTimer = null
+    }
+    function moveRightPaddle() {
+      paddleRightTop += paddleRightDirection;
+      paddleRight.style.top = paddleRightTop + 'px';
+    }
+    function moveLeftPaddle() {
+      paddleLeftTop += paddleLeftDirection;
+      paddleLeft.style.top = paddleLeftTop + 'px';
+    }
+
+    setInterval(moveBall, 25);
+    setInterval(function () {
+      if (ballXDirection < 50) ballXDirection *= 1.1;
+      if (ballYDirection < 50) ballYDirection *= 1.1;
+    }, 10000)
+    document.addEventListener('keydown', function (evt) {
+      switch (evt.code) {
+        case 'ArrowDown':
+          if (!paddleRightTimer) {
+            paddleRightDirection = 2;
+            paddleRightTimer = setInterval(moveRightPaddle, 0.2);
+          }
+          break;
+        case 'ArrowUp':
+          if (!paddleRightTimer) {
+            paddleRightDirection = -2;
+            paddleRightTimer = setInterval(moveRightPaddle, 0.2);
+          }
+          break;
+        case 'KeyS':
+          if (!paddleLeftTimer) {
+            paddleLeftDirection = 2;
+            paddleLeftTimer = setInterval(moveLeftPaddle, 0.2);
+          }
+          break;
+        case 'KeyW':
+          if (!paddleLeftTimer) {
+            paddleLeftDirection = -2;
+            paddleLeftTimer = setInterval(moveLeftPaddle, 0.2);
+          }
+          break;
+      }
+    })
+    document.addEventListener('keyup', function (evt) {
+      switch (evt.code) {
+        case 'ArrowDown':
+        case 'ArrowUp':
+          clearInterval(paddleRightTimer);
+          paddleRightTimer = null;
+          break;
+        case 'KeyS':
+        case 'KeyW':
+          clearInterval(paddleLeftTimer);
+          paddleLeftTimer = null;
+          break;
+      }
+    })
+  </script>
+</body>
+
+</html>
